@@ -12,16 +12,25 @@ class CommunityLinkController extends Controller
 {
     public function index()
     {
-    	$links = CommunityLink::paginate(15);
+    	$links = CommunityLink::where('approved', 1)->latest('updated_at')->paginate(15);
+
         $channels = Channel::orderBy('title', 'asc')->get();
     	
     	return view('community.index', compact('links', 'channels'));
     }
     public function store(CommunityLinkRequest $request)
     {
+
     	$link = CommunityLink::from(auth()->user())
             ->contribute($request->only(["title", "link", "channel_id"]));
 
-    	return redirect('/community');
+        if(auth()->user()->isTrusted()) {
+            session()->flash('thanks','Thanks for your contribution');
+        } else {
+            session()->flash('thanks','Wait for someone approves your link!');
+        }
+        
+    	return back();
     }
+
 }
