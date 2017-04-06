@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Exceptions\CommunityLinkAlreadySubmitted;
+
 class CommunityLink extends Model
 {
     protected $approved = false;
@@ -40,11 +42,13 @@ class CommunityLink extends Model
     	
     }
 
-    public function contribute(array $contribute)
+    public function contribute(array $contribute, $caller)
     {
 
         if ($exist = $this->hasAlreadyBeenSubmitted($contribute['link'])) { 
-            return $exist->touch();
+            $exist->touch();
+
+            throw new CommunityLinkAlreadySubmitted;
         }
         
     	$this->fill($contribute)->save();
@@ -60,6 +64,19 @@ class CommunityLink extends Model
     {   
         // additional: filter $link 
         return static::where('link', $link)->first();
+    }
+
+    public function scopeForChannel($builder ,Channel $channel)
+    {
+        if ($channel->exists) {
+            return $builder->where('channel_id', $channel->id);
+        }
+        return $builder;
+    }
+
+    public function votes()
+    {
+        return $this->hasMany(CommunityLinkVote::class, 'community_link_id');
     }
     
 }

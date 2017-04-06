@@ -13,4 +13,8 @@ class Channel extends Model
     {
     	return $this->title;
     }
+    public function getRouteKeyName()
+    {
+    	return 'slug';
+    }
 }
