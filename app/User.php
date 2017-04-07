@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\CommunityLink;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -30,5 +31,17 @@ class User extends Authenticatable
     public function isTrusted()
     {
         return !! $this->trusted;
+    }
+
+
+    public function votes()
+    {
+        return $this->belongsToMany(CommunityLink::class, 'community_links_votes')
+                    ->withTimestamps();
+    }
+
+    public function votedOn(CommunityLink $link)
+    {
+        return $link->votes->contains('user_id', $this->id);
     }
 }
