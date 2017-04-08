@@ -42,7 +42,7 @@ class CommunityLink extends Model
     	
     }
 
-    public function contribute(array $contribute, $caller)
+    public function contribute(array $contribute)
     {
 
         if ($exist = $this->hasAlreadyBeenSubmitted($contribute['link'])) { 

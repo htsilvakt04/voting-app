@@ -10,6 +10,14 @@
 				<span>&mdash; {{$channel->title}}</span>
 			@endif
 		</h2>
+		<ul class="nav nav-tabs">
+			<li  class="{{empty(request()->query()) ? 'active' : ''}}">
+				<a href="{{request()->url()}}">Most Recent</a>
+			</li>
+			<li class="{{empty(request()->query()) ? '' : 'active'}}">
+				<a href="?popular">Most Popular</a>
+			</li>
+		</ul>
 		<ul class="list-group">
 			@if(count($links))
 			@foreach ($links as $link)
@@ -19,7 +27,7 @@
 
 						<button class="btn {{auth()->check() && auth()->user()->votedOn($link) ? 'btn-success' : 'btn-default'}}" type="submit"
 						{{Auth::guest() ? "disabled" : ""}} >
-							{{$link->votes->count()}}
+							{{$link->votes_count}}
 						</button>
 					</form>
 					
@@ -37,6 +45,7 @@
 				<li class="list-group-item">No contributes yet</li>
 			@endif
 		</ul>		
-	{{$links->links()}}
+		
+	{{ $links->appends(array_merge(request()->query(), ["popular" => '']))->links() }}
 </div>
 		
